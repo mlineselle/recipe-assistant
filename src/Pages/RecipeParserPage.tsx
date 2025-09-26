@@ -11,6 +11,7 @@ import { useState } from "react";
 import type { Timestamp } from "firebase/firestore";
 import RecipeDisplay from "../Components/RecipeDisplay";
 import SubmitRecipeButton from "../Components/Buttons/SubmitRecipeButton";
+import { getAuth } from "firebase/auth";
 
 export interface Recipe {
   id: string;
@@ -31,11 +32,17 @@ const RecipeParserPage = () => {
     setError("");
     setRecipe(null);
 
+    const auth = getAuth();
+
+    const idToken = await auth.currentUser?.getIdToken();
+    if (!idToken) throw new Error("User not authenticated");
+
     try {
       const response = await fetch("https://api-2booc4avkq-uc.a.run.app/extract", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${idToken}`,
         },
         body: JSON.stringify({ url: recipeUrl }),
       });
