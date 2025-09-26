@@ -32,7 +32,7 @@ const RecipeParserPage = () => {
     setRecipe(null);
 
     try {
-      const response = await fetch("https://api-2booc4avkq-uc.a.run.app", {
+      const response = await fetch("https://api-2booc4avkq-uc.a.run.app/extract", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
