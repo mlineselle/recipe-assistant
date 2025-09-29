@@ -50,7 +50,7 @@ const SavedRecipesPage = () => {
         </Card>
       )}
       {!selectedRecipe && (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} justifyContent={"center"}>
           {savedRecipes.map((recipe) => (
             <Grid size={8} key={recipe.id}>
               <Card>
