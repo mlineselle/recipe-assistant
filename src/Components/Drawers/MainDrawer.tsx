@@ -8,10 +8,13 @@ import {
   Toolbar,
 } from "@mui/material";
 import AuthDialog from "../Dialogs/AuthDialog";
-import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import AccountDialog from "../Dialogs/AccountDialog";
 import { useNavigate } from "react-router-dom";
+import { onOpenDialog } from "../../redux/ApplicationSlice";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../../redux/Store";
+import { DIALOGS } from "../../utils/constants";
 
 interface MainDrawerProps {
   open: boolean;
@@ -19,26 +22,26 @@ interface MainDrawerProps {
 }
 
 const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
-  const [openAuth, setOpenAuth] = useState(false);
-  const [openAccount, setOpenAccount] = useState(false);
+  const dispatch = useDispatch();
+  const { openDialog } = useSelector((state: RootState) => state.application);
 
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const handleAuthOpen = () => {
-    setOpenAuth(true);
+    dispatch(onOpenDialog(DIALOGS.AUTH));
   };
 
   const handleCloseAuth = () => {
-    setOpenAuth(false);
+    dispatch(onOpenDialog(null));
   };
 
   const handleAccountOpen = () => {
-    setOpenAccount(true);
+    dispatch(onOpenDialog(DIALOGS.ACCOUNT));
   };
 
   const handleAccountClose = () => {
-    setOpenAccount(false);
+    dispatch(onOpenDialog(null));
   };
 
   const handleRecipesClick = () => {
@@ -93,8 +96,8 @@ const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
           </List>
         </Box>
       </Drawer>
-      <AuthDialog open={openAuth} onClose={handleCloseAuth} />
-      <AccountDialog open={openAccount} onClose={handleAccountClose} />
+      {openDialog === DIALOGS.AUTH && <AuthDialog open onClose={handleCloseAuth} />}
+      {openDialog === DIALOGS.ACCOUNT && <AccountDialog open onClose={handleAccountClose} />}
     </>
   );
 };

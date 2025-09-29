@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardContent,
   CircularProgress,
@@ -12,6 +13,11 @@ import type { Timestamp } from "firebase/firestore";
 import RecipeDisplay from "../Components/RecipeDisplay";
 import SubmitRecipeButton from "../Components/Buttons/SubmitRecipeButton";
 import { getAuth } from "firebase/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { onOpenDialog } from "../redux/ApplicationSlice";
+import { DIALOGS } from "../utils/constants";
+import AuthDialog from "../Components/Dialogs/AuthDialog";
+import type { RootState } from "../redux/Store";
 
 export interface Recipe {
   id: string;
@@ -27,12 +33,14 @@ const RecipeParserPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const { openDialog } = useSelector((state: RootState) => state.application);
+  const dispatch = useDispatch();
+  const auth = getAuth();
+
   const handleSubmit = async () => {
     setLoading(true);
     setError("");
     setRecipe(null);
-
-    const auth = getAuth();
 
     const idToken = await auth.currentUser?.getIdToken();
     if (!idToken) throw new Error("User not authenticated");
@@ -68,6 +76,14 @@ const RecipeParserPage = () => {
     setRecipe(null);
   };
 
+  const handleAuthOpen = () => {
+    dispatch(onOpenDialog("auth"));
+  };
+
+  const handleCloseAuth = () => {
+    dispatch(onOpenDialog(null));
+  };
+
   return (
     <Stack justifyContent={"center"} alignItems={"center"} sx={{ p: 2 }}>
       <Toolbar />
@@ -77,49 +93,89 @@ const RecipeParserPage = () => {
 
       {!recipe && (
         // Main Card
-        <Card
-          sx={{
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            p: 4,
-            width: "100%",
-            maxWidth: 600,
-            m: 2,
-          }}
-        >
-          <CardContent sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h2"
-              component="h1"
-              color="primary"
-              gutterBottom
+        auth.currentUser ?
+          (<Card
+            sx={{
+              position: "fixed",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              p: 4,
+              width: "100%",
+              maxWidth: 600,
+              m: 2,
+            }}
+          >
+            <CardContent sx={{ textAlign: "center" }}>
+              <Typography
+                variant="h2"
+                component="h1"
+                color="primary"
+                gutterBottom
+              >
+                Recipe Assistant
+              </Typography>
+              <Typography variant="body2" fontSize={20}>
+                Welcome to the Recipe Assistant!
+              </Typography>
+              <Typography variant="body2" fontSize={20} sx={{ mb: 4 }}>
+                Enter a recipe URL below to extract the ingredients and
+                instructions.
+              </Typography>
+              <Stack spacing={2} sx={{ mb: 4 }}>
+                <TextField
+                  label="Recipe URL"
+                  variant="outlined"
+                  value={recipeUrl}
+                  onChange={(e) => setRecipeUrl(e.target.value)}
+                  sx={{ input: { color: "white" } }}
+                />
+                <SubmitRecipeButton onClick={handleSubmit} />
+              </Stack>
+              {error && <Typography color="error">{error}</Typography>}
+              {loading && <CircularProgress />}
+            </CardContent>
+          </Card>) :
+          (
+            <Card
+              sx={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                p: 4,
+                width: "100%",
+                maxWidth: 600,
+                m: 2,
+              }}
             >
-              Recipe Assistant
-            </Typography>
-            <Typography variant="body2" fontSize={20}>
-              Welcome to the Recipe Assistant!
-            </Typography>
-            <Typography variant="body2" fontSize={20} sx={{ mb: 4 }}>
-              Enter a recipe URL below to extract the ingredients and
-              instructions.
-            </Typography>
-            <Stack spacing={2} sx={{ mb: 4 }}>
-              <TextField
-                label="Recipe URL"
-                variant="outlined"
-                value={recipeUrl}
-                onChange={(e) => setRecipeUrl(e.target.value)}
-                sx={{ input: { color: "white" } }}
-              />
-              <SubmitRecipeButton onClick={handleSubmit} />
-            </Stack>
-            {error && <Typography color="error">{error}</Typography>}
-            {loading && <CircularProgress />}
-          </CardContent>
-        </Card>
+              <CardContent sx={{ textAlign: "center" }}>
+                <Typography
+                  variant="h2"
+                  component="h1"
+                  color="primary"
+                  gutterBottom
+                >
+                  Recipe Assistant
+                </Typography>
+                <Typography variant="body2" fontSize={20}>
+                  Welcome to the Recipe Assistant, your AI-powered cooking companion!
+                  Give it a recipe URL, and it will extract the ingredients and instructions for you,
+                  then help you save and organize your favorite recipes.
+                </Typography>
+                <Typography variant="body2" fontSize={20} sx={{ mt: 4 }}>
+                  Please log in to start!
+                </Typography>
+                <Button
+                  onClick={handleAuthOpen}
+                >
+                  Log In / Sign Up
+                </Button>
+              </CardContent>
+            </Card>
+          )
       )}
+      {openDialog === DIALOGS.AUTH && <AuthDialog open onClose={handleCloseAuth} />}
     </Stack>
   );
 };
