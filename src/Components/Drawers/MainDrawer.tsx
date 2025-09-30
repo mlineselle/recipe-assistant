@@ -1,11 +1,13 @@
 import {
   Box,
+  Divider,
   Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
   Toolbar,
+  useMediaQuery,
 } from "@mui/material";
 import AuthDialog from "../Dialogs/AuthDialog";
 import { useAuth } from "../../hooks/useAuth";
@@ -15,6 +17,7 @@ import { onOpenDialog } from "../../redux/ApplicationSlice";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../redux/Store";
 import { DIALOGS } from "../../utils/constants";
+import theme from "../../theme";
 
 interface MainDrawerProps {
   open: boolean;
@@ -24,6 +27,7 @@ interface MainDrawerProps {
 const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
   const dispatch = useDispatch();
   const { openDialog } = useSelector((state: RootState) => state.application);
+  const isSmallScreen = useMediaQuery((theme.breakpoints.down("sm")));
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -59,7 +63,7 @@ const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
   return (
     <>
       <Drawer open={open} onClose={handleMenuClick}>
-        <Box sx={{ width: 250 }}>
+        <Box sx={{ width: isSmallScreen ? "100vw" : 250 }}>
           <Toolbar />
           <List>
             <ListItem>
@@ -67,6 +71,7 @@ const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
                 <ListItemText primary="Home" />
               </ListItemButton>
             </ListItem>
+            <Divider />
             <ListItem>
               <ListItemButton
                 onClick={!user ? handleAuthOpen : handleAccountOpen}
@@ -78,21 +83,25 @@ const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
                 )}
               </ListItemButton>
             </ListItem>
+            <Divider />
             <ListItem>
               <ListItemButton onClick={handleRecipesClick}>
                 <ListItemText primary="Recipes" />
               </ListItemButton>
             </ListItem>
+            <Divider />
             <ListItem>
               <ListItemButton>
                 <ListItemText primary="Shopping List" />
               </ListItemButton>
             </ListItem>
+            <Divider />
             <ListItem>
               <ListItemButton>
                 <ListItemText primary="Settings" />
               </ListItemButton>
             </ListItem>
+            <Divider />
           </List>
         </Box>
       </Drawer>

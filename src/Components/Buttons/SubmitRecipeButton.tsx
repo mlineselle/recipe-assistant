@@ -1,12 +1,19 @@
 import { Button } from "@mui/material";
 
 interface SubmitRecipeButtonProps {
+  disabled: boolean;
   onClick: () => void;
 }
 
-const SubmitRecipeButton = ({ onClick }: SubmitRecipeButtonProps) => {
+const SubmitRecipeButton = ({ disabled, onClick }: SubmitRecipeButtonProps) => {
   return (
-  <Button variant="contained" color="primary" onClick={onClick} sx={{ mt: 2, width: 'fit-content', alignSelf: 'center' }}>
+    <Button
+      disabled={disabled}
+      variant="contained"
+      color="primary"
+      onClick={onClick}
+      sx={{ mt: 2, width: 'fit-content', alignSelf: 'center' }}
+    >
       Submit Recipe
     </Button>
   );
