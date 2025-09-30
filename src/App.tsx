@@ -28,6 +28,7 @@ function App() {
                 bgcolor: "background.default",
                 color: "text.primary",
                 minHeight: "100dvh",
+                width: "100%",
               }}
             >
               <PrimaryBar handleMenuClick={handleMenuClick} />

@@ -84,6 +84,82 @@ const RecipeParserPage = () => {
     dispatch(onOpenDialog(null));
   };
 
+  const getMainCard = () => {
+    if (!auth.currentUser) {
+      return (<Card
+        sx={{
+          p: 4,
+          width: "100%",
+          maxWidth: 600,
+          m: 2,
+        }}
+      >
+        <CardContent sx={{ textAlign: "center" }}>
+          <Typography
+            variant="h2"
+            component="h1"
+            color="primary"
+            gutterBottom
+          >
+            Recipe Assistant
+          </Typography>
+          <Typography variant="body2" fontSize={20}>
+            Welcome to the Recipe Assistant, your AI-powered cooking companion!
+            Give it a recipe URL, and it will extract the ingredients and instructions for you,
+            then help you save and organize your favorite recipes.
+          </Typography>
+          <Typography variant="body2" fontSize={20} sx={{ mt: 4 }}>
+            Please log in to start!
+          </Typography>
+          <Button
+            onClick={handleAuthOpen}
+          >
+            Log In / Sign Up
+          </Button>
+        </CardContent>
+      </Card>)
+    } else {
+      return (<Card
+        sx={{
+          p: 4,
+          width: "100%",
+          maxWidth: 600,
+          m: 2,
+        }}
+      >
+        <CardContent sx={{ textAlign: "center" }}>
+          <Typography
+            variant="h2"
+            component="h1"
+            color="primary"
+            gutterBottom
+          >
+            Recipe Assistant
+          </Typography>
+          <Typography variant="body2" fontSize={20}>
+            Welcome to the Recipe Assistant!
+          </Typography>
+          <Typography variant="body2" fontSize={20} sx={{ mb: 4 }}>
+            Enter a recipe URL below to extract the ingredients and
+            instructions.
+          </Typography>
+          <Stack spacing={2} sx={{ mb: 4 }}>
+            <TextField
+              label="Recipe URL"
+              variant="outlined"
+              value={recipeUrl}
+              onChange={(e) => setRecipeUrl(e.target.value)}
+              sx={{ input: { color: "white" } }}
+            />
+            <SubmitRecipeButton disabled = {loading} onClick={handleSubmit} />
+          </Stack>
+          {error && <Typography color="error">{error}</Typography>}
+          {loading && <CircularProgress />}
+        </CardContent>
+      </Card>)
+    }
+  }
+
   return (
     <Stack justifyContent={"center"} alignItems={"center"} sx={{ p: 2 }}>
       <Toolbar />
@@ -91,90 +167,7 @@ const RecipeParserPage = () => {
         <RecipeDisplay recipe={recipe} handleClose={handleCloseRecipe} />
       )}
 
-      {!recipe && (
-        // Main Card
-        auth.currentUser ?
-          (<Card
-            sx={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              p: 4,
-              width: "100%",
-              maxWidth: 600,
-              m: 2,
-            }}
-          >
-            <CardContent sx={{ textAlign: "center" }}>
-              <Typography
-                variant="h2"
-                component="h1"
-                color="primary"
-                gutterBottom
-              >
-                Recipe Assistant
-              </Typography>
-              <Typography variant="body2" fontSize={20}>
-                Welcome to the Recipe Assistant!
-              </Typography>
-              <Typography variant="body2" fontSize={20} sx={{ mb: 4 }}>
-                Enter a recipe URL below to extract the ingredients and
-                instructions.
-              </Typography>
-              <Stack spacing={2} sx={{ mb: 4 }}>
-                <TextField
-                  label="Recipe URL"
-                  variant="outlined"
-                  value={recipeUrl}
-                  onChange={(e) => setRecipeUrl(e.target.value)}
-                  sx={{ input: { color: "white" } }}
-                />
-                <SubmitRecipeButton onClick={handleSubmit} />
-              </Stack>
-              {error && <Typography color="error">{error}</Typography>}
-              {loading && <CircularProgress />}
-            </CardContent>
-          </Card>) :
-          (
-            <Card
-              sx={{
-                position: "fixed",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                p: 4,
-                width: "100%",
-                maxWidth: 600,
-                m: 2,
-              }}
-            >
-              <CardContent sx={{ textAlign: "center" }}>
-                <Typography
-                  variant="h2"
-                  component="h1"
-                  color="primary"
-                  gutterBottom
-                >
-                  Recipe Assistant
-                </Typography>
-                <Typography variant="body2" fontSize={20}>
-                  Welcome to the Recipe Assistant, your AI-powered cooking companion!
-                  Give it a recipe URL, and it will extract the ingredients and instructions for you,
-                  then help you save and organize your favorite recipes.
-                </Typography>
-                <Typography variant="body2" fontSize={20} sx={{ mt: 4 }}>
-                  Please log in to start!
-                </Typography>
-                <Button
-                  onClick={handleAuthOpen}
-                >
-                  Log In / Sign Up
-                </Button>
-              </CardContent>
-            </Card>
-          )
-      )}
+      {!recipe && getMainCard()}
       {openDialog === DIALOGS.AUTH && <AuthDialog open onClose={handleCloseAuth} />}
     </Stack>
   );

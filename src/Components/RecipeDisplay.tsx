@@ -9,12 +9,14 @@ import {
   ListItemText,
   Stack,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import type { Recipe } from "../Pages/RecipeParserPage";
 import CloseIcon from "@mui/icons-material/Close";
 import CircleIcon from "@mui/icons-material/Circle";
 import { addRecipe, deleteRecipe } from "../utils/dbHelpers";
 import { useAuth } from "../hooks/useAuth";
+import theme from "../theme";
 
 interface RecipeDisplayProps {
   savedRecipes?: Recipe[];
@@ -24,6 +26,7 @@ interface RecipeDisplayProps {
 
 const RecipeDisplay = ({ recipe, handleClose, savedRecipes }: RecipeDisplayProps) => {
   const { user } = useAuth();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSaveRecipe = () => {
     if (!user) return;
@@ -38,7 +41,7 @@ const RecipeDisplay = ({ recipe, handleClose, savedRecipes }: RecipeDisplayProps
 
   return (
     <Card
-      sx={{ position: "relative", p: 4, width: "100%", maxWidth: "50vw", m: 4 }}
+      sx={{ position: "relative", p: 4, width: "100%", maxWidth: 850, m: 4 }}
     >
       <CardContent>
         <Stack
@@ -74,7 +77,7 @@ const RecipeDisplay = ({ recipe, handleClose, savedRecipes }: RecipeDisplayProps
             {recipe.ingredients.map((ingredient, index) => (
               <ListItem key={index}>
                 <ListItemIcon>
-                  <CircleIcon color="primary" />
+                  <CircleIcon color="primary" fontSize={isSmallScreen ? "small" : "medium"} />
                 </ListItemIcon>
                 <ListItemText primary={ingredient} />
               </ListItem>
