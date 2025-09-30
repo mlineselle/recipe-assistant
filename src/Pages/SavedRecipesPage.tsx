@@ -52,7 +52,7 @@ const SavedRecipesPage = () => {
       {!selectedRecipe && (
         <Grid container spacing={2}>
           {savedRecipes.map((recipe) => (
-            <Grid size={8} key={recipe.id}>
+            <Grid key={recipe.id} sx={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
               <Card>
                 <CardActionArea onClick={() => handleRecipeClick(recipe.id)}>
                   <CardContent sx={{ textAlign: "center" }}>

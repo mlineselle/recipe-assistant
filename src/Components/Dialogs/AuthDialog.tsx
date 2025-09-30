@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import GoogleSignInButton from "../Buttons/GoogleSignInButton";
 import GoogleSignUpButton from "../Buttons/GoogleSignUpButton";
 import { FirebaseError } from "firebase/app";
 import CloseIcon from "@mui/icons-material/Close";
+import ReCAPTCHA from "react-google-recaptcha";
 
 interface AuthDialogProps {
   open: boolean;
@@ -20,6 +21,7 @@ interface AuthDialogProps {
 }
 
 const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
+  const reCaptcha = useRef<ReCAPTCHA | null>(null);
   const [isLogin, setIsLogin] = useState(true); // toggle between login/signup
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,6 +32,12 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    const captchaValue = reCaptcha.current?.getValue()
+    if (!captchaValue) {
+      setError("Please complete the reCAPTCHA");
+      return;
+    }
 
     try {
       if (isLogin) {
@@ -81,7 +89,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
         </IconButton>
         <Stack alignItems="center" mb={2} width={"100%"} mt={2}>
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-            <Stack>
+            <Stack justifyContent={"center"}>
               <TextField
                 label="Email"
                 type="email"
@@ -103,6 +111,9 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                 helperText={error}
                 margin="normal"
               />
+              <Stack alignItems="center" justifyContent="center" mt={1} mb={1}>
+                <ReCAPTCHA ref={reCaptcha} sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY} />
+              </Stack>
               <Button
                 type="submit"
                 variant="contained"
@@ -114,8 +125,8 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
                     ? "Logging in..."
                     : "Signing up..."
                   : isLogin
-                  ? "Login"
-                  : "Sign Up"}
+                    ? "Login"
+                    : "Sign Up"}
               </Button>
             </Stack>
           </form>

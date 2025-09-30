@@ -1,17 +1,23 @@
 import {
   Box,
+  Divider,
   Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemText,
   Toolbar,
+  useMediaQuery,
 } from "@mui/material";
 import AuthDialog from "../Dialogs/AuthDialog";
-import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import AccountDialog from "../Dialogs/AccountDialog";
 import { useNavigate } from "react-router-dom";
+import { onOpenDialog } from "../../redux/ApplicationSlice";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../../redux/Store";
+import { DIALOGS } from "../../utils/constants";
+import theme from "../../theme";
 
 interface MainDrawerProps {
   open: boolean;
@@ -19,26 +25,27 @@ interface MainDrawerProps {
 }
 
 const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
-  const [openAuth, setOpenAuth] = useState(false);
-  const [openAccount, setOpenAccount] = useState(false);
+  const dispatch = useDispatch();
+  const { openDialog } = useSelector((state: RootState) => state.application);
+  const isSmallScreen = useMediaQuery((theme.breakpoints.down("sm")));
 
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const handleAuthOpen = () => {
-    setOpenAuth(true);
+    dispatch(onOpenDialog(DIALOGS.AUTH));
   };
 
   const handleCloseAuth = () => {
-    setOpenAuth(false);
+    dispatch(onOpenDialog(null));
   };
 
   const handleAccountOpen = () => {
-    setOpenAccount(true);
+    dispatch(onOpenDialog(DIALOGS.ACCOUNT));
   };
 
   const handleAccountClose = () => {
-    setOpenAccount(false);
+    dispatch(onOpenDialog(null));
   };
 
   const handleRecipesClick = () => {
@@ -56,7 +63,7 @@ const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
   return (
     <>
       <Drawer open={open} onClose={handleMenuClick}>
-        <Box sx={{ width: 250 }}>
+        <Box sx={{ width: isSmallScreen ? "100vw" : 250 }}>
           <Toolbar />
           <List>
             <ListItem>
@@ -64,6 +71,7 @@ const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
                 <ListItemText primary="Home" />
               </ListItemButton>
             </ListItem>
+            <Divider />
             <ListItem>
               <ListItemButton
                 onClick={!user ? handleAuthOpen : handleAccountOpen}
@@ -75,26 +83,30 @@ const MainDrawer = ({ open, handleMenuClick }: MainDrawerProps) => {
                 )}
               </ListItemButton>
             </ListItem>
+            <Divider />
             <ListItem>
               <ListItemButton onClick={handleRecipesClick}>
                 <ListItemText primary="Recipes" />
               </ListItemButton>
             </ListItem>
+            <Divider />
             <ListItem>
               <ListItemButton>
                 <ListItemText primary="Shopping List" />
               </ListItemButton>
             </ListItem>
+            <Divider />
             <ListItem>
               <ListItemButton>
                 <ListItemText primary="Settings" />
               </ListItemButton>
             </ListItem>
+            <Divider />
           </List>
         </Box>
       </Drawer>
-      <AuthDialog open={openAuth} onClose={handleCloseAuth} />
-      <AccountDialog open={openAccount} onClose={handleAccountClose} />
+      {openDialog === DIALOGS.AUTH && <AuthDialog open onClose={handleCloseAuth} />}
+      {openDialog === DIALOGS.ACCOUNT && <AccountDialog open onClose={handleAccountClose} />}
     </>
   );
 };
