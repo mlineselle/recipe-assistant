@@ -7,6 +7,7 @@ import {
   Typography,
   Stack,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
 import { signup, login } from "../../utils/authService";
 import GoogleSignInButton from "../Buttons/GoogleSignInButton";
@@ -14,6 +15,7 @@ import GoogleSignUpButton from "../Buttons/GoogleSignUpButton";
 import { FirebaseError } from "firebase/app";
 import CloseIcon from "@mui/icons-material/Close";
 import ReCAPTCHA from "react-google-recaptcha";
+import theme from "../../theme";
 
 interface AuthDialogProps {
   open: boolean;
@@ -27,6 +29,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +83,7 @@ const AuthDialog: React.FC<AuthDialogProps> = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogContent sx={{ minWidth: 450, position: "relative" }}>
+      <DialogContent sx={{ minWidth: isSmallScreen ? 0 : 450, position: "relative" }}>
         <IconButton
           onClick={onClose}
           sx={{ position: "absolute", top: 8, right: 8 }}
