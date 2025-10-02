@@ -70,6 +70,22 @@ const RecipeDisplay = ({ recipe, handleClose, savedRecipes }: RecipeDisplayProps
           >
             {recipe.title}
           </Typography>
+          <Stack direction="row" spacing={3} sx={{ mb: 2 }}>
+            {recipe.times?.prep && (
+              <Typography variant="body1" color="text.secondary">
+                <strong>Prep:</strong> {recipe.times.prep} mins
+              </Typography>
+            )}
+            {recipe.times?.cook && (
+              <Typography variant="body1" color="text.secondary">
+                <strong>Cook:</strong> {recipe.times.cook} mins
+              </Typography>
+            )}
+            {recipe.times?.total &&
+              <Typography variant="body1" color="text.secondary">
+                <strong>Total:</strong> {recipe.times.total} mins
+              </Typography>}
+          </Stack>
           <Typography variant="h4" color="primary" textAlign="left">
             Ingredients
           </Typography>
