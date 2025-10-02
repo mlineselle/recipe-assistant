@@ -22,6 +22,7 @@ import type { RootState } from "../redux/Store";
 export interface Recipe {
   id: string;
   title: string;
+  times: {prep?: string; cook?: string; total: string;};
   ingredients: string[];
   instructions: string[];
   createdAt?: Timestamp;
