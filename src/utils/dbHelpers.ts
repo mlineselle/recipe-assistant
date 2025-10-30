@@ -39,6 +39,11 @@ const addRecipe = async (user: User, recipe: Omit<Recipe, "createdAt">) => {
   });
 };
 
+const updateRecipe = async (user: User, updatedRecipe: Recipe) => {
+  const recipeRef = doc(db, "users", user.uid, "recipes", updatedRecipe.id);
+  await setDoc(recipeRef, updatedRecipe, { merge: true });
+};
+
 const getUserRecipes = async (user: User) => {
   const userRef = doc(db, "users", user.uid);
   const recipesRef = collection(userRef, "recipes");
@@ -62,4 +67,4 @@ const deleteRecipe = async (user: User, recipeId: string) => {
   await deleteDoc(recipeRef);
 };
 
-export { createUserDocument, addRecipe, getUserRecipes, deleteRecipe };
+export { createUserDocument, addRecipe, getUserRecipes, deleteRecipe, updateRecipe };
